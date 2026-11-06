@@ -1,0 +1,9 @@
+{
+  "name": "OptionPilot India",
+  "short_name": "OptionPilot",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0b1220",
+  "theme_color": "#101827",
+  "description": "Indian options market paper trading terminal with an unlimited virtual wallet."
+}

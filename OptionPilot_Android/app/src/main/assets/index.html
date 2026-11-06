@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101827"><title>OptionPilot India — Paper Trading</title>
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+:root{--bg:#0b1220;--panel:#121d2e;--panel2:#17253a;--line:#26364c;--txt:#edf3fb;--muted:#91a3b9;--green:#20c997;--red:#ff647c;--gold:#f5c451;--blue:#5ba7ff}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#0b1220,#101a2b 55%,#0b1220);color:var(--txt);font:14px/1.45 Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+header{position:sticky;top:0;z-index:4;background:#0d1727ed;backdrop-filter:blur(14px);border-bottom:1px solid var(--line);padding:14px 16px;display:flex;align-items:center;justify-content:space-between}
+.brand{font-size:17px;font-weight:850;letter-spacing:.2px}.brand span{color:var(--gold)}.sub{color:var(--muted);font-size:11px}
+main{max-width:1100px;margin:auto;padding:16px;display:grid;gap:14px}.wallet{background:linear-gradient(120deg,#1c3148,#15243a);border:1px solid #34506b;border-radius:18px;padding:17px;display:flex;justify-content:space-between;gap:12px;align-items:center}.wallet small{color:#b7c9dc}.wallet strong{display:block;font-size:27px;letter-spacing:-.8px;margin-top:4px}.wallet .infinite{color:var(--gold);font-size:12px;font-weight:800}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat,.panel{background:var(--panel);border:1px solid var(--line);border-radius:15px}.stat{padding:12px}.stat small{color:var(--muted);display:block}.stat b{font-size:18px;display:block;margin-top:5px}.panel{padding:14px}.panel h2{font-size:15px;margin:0 0 12px}.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+button,select,input{font:inherit;color:var(--txt);background:var(--panel2);border:1px solid #34465e;border-radius:9px;padding:9px 11px;min-height:38px}
+button{cursor:pointer;font-weight:700}button.primary{background:var(--gold);border-color:var(--gold);color:#18202b}button.buy{background:#0e493e;border-color:#147d67;color:#68f0c4}button.sell{background:#4b2330;border-color:#874153;color:#ff9cac}button:disabled{opacity:.45;cursor:not-allowed}
+input{min-width:0}input::placeholder{color:#70839a}.muted{color:var(--muted)}.green{color:var(--green)}.red{color:var(--red)}.gold{color:var(--gold)}
+.tabs{display:flex;gap:7px;overflow:auto}.tabs button{white-space:nowrap}.tabs button.active{border-color:var(--gold);color:var(--gold)}
+.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:10px}table{border-collapse:collapse;width:100%;min-width:720px;font-size:12px}th,td{padding:9px 8px;border-bottom:1px solid #25364a;text-align:right;white-space:nowrap}th{background:#18273b;color:#aebed0;font-weight:700;position:sticky;top:0}th:first-child,td:first-child{text-align:left}tr:last-child td{border-bottom:0}.strike{font-weight:800;color:var(--gold)}
+.actions{display:flex;gap:5px;justify-content:flex-end}.actions button{padding:5px 8px;min-height:29px;font-size:11px}
+.notice{border:1px solid #69582b;background:#2b2619;color:#f2d88b;border-radius:10px;padding:10px;font-size:12px}
+.formgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.field label{display:block;color:var(--muted);font-size:11px;margin:0 0 4px}.field input,.field select{width:100%}
+.rowhead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}.badge{font-size:10px;border:1px solid #42536a;border-radius:20px;padding:3px 8px;color:#b9c9d9}.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red);margin-right:5px}.dot.on{background:var(--green)}
+.bottomnav{display:flex;justify-content:space-around;gap:5px;position:sticky;bottom:0;background:#0c1625ed;backdrop-filter:blur(14px);padding:9px;border-top:1px solid var(--line);z-index:3}.bottomnav button{flex:1;background:transparent;border:0;color:var(--muted)}.bottomnav button.active{color:var(--gold)}
+.hidden{display:none!important}.empty{text-align:center;padding:25px;color:var(--muted)}
+footer{text-align:center;color:#71839a;font-size:11px;padding:4px 10px 18px}
+@media(max-width:650px){main{padding:11px}.grid{grid-template-columns:repeat(2,1fr)}.wallet strong{font-size:23px}.formgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.wallet{align-items:flex-start}.stat b{font-size:16px}}
+</style></head>
+<body>
+<header><div><div class="brand">OPTION<span>PILOT</span> <span style="color:#d7e2ef">INDIA</span></div><div class="sub">Options paper trading terminal</div></div><span class="badge">PAPER MODE</span></header>
+<main>
+<section class="wallet"><div><small>Virtual buying power</small><strong>UNLIMITED</strong><div class="sub">No real funds • No broker orders</div></div><div style="text-align:right"><div class="infinite">∞ VIRTUAL WALLET</div><div class="sub" id="walletCount">0 open positions</div></div></section>
+<section class="grid">
+ <div class="stat"><small>Open P&amp;L</small><b id="openPnl">₹0.00</b></div><div class="stat"><small>Booked P&amp;L</small><b id="bookedPnl">₹0.00</b></div><div class="stat"><small>Open positions</small><b id="posCount">0</b></div><div class="stat"><small>Orders today</small><b id="orderCount">0</b></div>
+</section>
+<section class="panel" id="chainPanel">
+ <div class="rowhead"><h2>Option Chain</h2><span class="badge"><i class="dot" id="liveDot"></i><span id="feedStatus">Not connected</span></span></div>
+ <div class="toolbar" style="margin-bottom:10px">
+  <select id="underlying"><option value="NSE_INDEX|Nifty 50">NIFTY 50</option><option value="NSE_INDEX|Nifty Bank">BANKNIFTY</option><option value="NSE_INDEX|Nifty Fin Service">FINNIFTY</option></select>
+  <input id="expiry" type="date" aria-label="Expiry date">
+  <button class="primary" id="loadChain">Load live chain</button>
+  <button id="refresh">Refresh</button>
+ </div>
+ <div class="notice" id="feedNotice">Connect a supported Upstox account using your personal access token in Settings. Live option-chain data requires an authorized broker API session. This app never generates fake live prices.</div>
+ <div class="tablewrap" style="margin-top:12px"><table><thead><tr><th colspan="4" style="text-align:center;color:#68f0c4">CALL (CE)</th><th style="text-align:center">STRIKE</th><th colspan="4" style="text-align:center;color:#ff9cac">PUT (PE)</th></tr><tr><th>LTP</th><th>OI</th><th>VOL</th><th>IV</th><th>PRICE</th><th>IV</th><th>VOL</th><th>OI</th><th>LTP</th></tr></thead><tbody id="chainRows"><tr><td colspan="9" class="empty">Enter API settings and load an option chain.</td></tr></tbody></table></div>
+ <div class="sub" style="margin-top:8px">Tap Buy/Sell on a contract after loading. Option chain API: Upstox. Prices are not guaranteed executable prices.</div>
+</section>
+<section class="panel" id="positionsPanel"><div class="rowhead"><h2>Open Positions</h2><span class="badge">Virtual trades</span></div><div class="tablewrap"><table><thead><tr><th>Contract</th><th>Side</th><th>Qty</th><th>Avg. price</th><th>LTP</th><th>P&amp;L</th><th>Action</th></tr></thead><tbody id="positionsRows"><tr><td colspan="7" class="empty">No open positions yet.</td></tr></tbody></table></div></section>
+<section class="panel" id="ordersPanel"><div class="rowhead"><h2>Order Book</h2><button id="clearOrders">Clear history</button></div><div class="tablewrap"><table><thead><tr><th>Time</th><th>Contract</th><th>Action</th><th>Qty</th><th>Price</th><th>Status</th></tr></thead><tbody id="ordersRows"><tr><td colspan="6" class="empty">No paper orders yet.</td></tr></tbody></table></div></section>
+<section class="panel" id="settingsPanel"><h2>Market Data Settings</h2><div class="notice">Your access token stays in this browser's local storage. For a production app, OAuth should be handled by a secure backend; do not share your token.</div><div class="formgrid" style="margin-top:12px">
+ <div class="field" style="grid-column:1/-1"><label>Upstox access token</label><input id="token" type="password" placeholder="Paste your personal Upstox access token"></div>
+ <div class="field"><label>Paper order quantity (units)</label><input id="quantity" type="number" min="1" value="1"></div>
+ <div class="field"><label>Refresh interval</label><select id="interval"><option value="15">15 seconds</option><option value="30" selected>30 seconds</option><option value="60">60 seconds</option></select></div>
+ <div class="field"><label>Brokerage per executed order (₹)</label><input id="brokerage" type="number" min="0" value="20"></div>
+ </div><div class="toolbar" style="margin-top:12px"><button class="primary" id="saveSettings">Save settings</button><button id="forgetToken">Forget token</button><button id="resetApp">Reset paper account</button></div>
+ <p class="sub">Supported data source: Upstox Option Chain REST API. Sign in to Upstox and create an API app to obtain your own access token. This app only reads market data; it does not place real trades.</p>
+</section>
+</main>
+<nav class="bottomnav"><button class="active" data-target="chainPanel">⌁ Chain</button><button data-target="positionsPanel">▤ Positions</button><button data-target="ordersPanel">◷ Orders</button><button data-target="settingsPanel">⚙ Settings</button></nav>
+<footer>OptionPilot India • Educational paper trading only • Not investment advice</footer>
+<script>
+const $=id=>document.getElementById(id), fmt=n=>'₹'+Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+let chain=[],positions=JSON.parse(localStorage.getItem('op_positions')||'[]'),orders=JSON.parse(localStorage.getItem('op_orders')||'[]'),booked=Number(localStorage.getItem('op_booked')||0),lastLoaded=0,refreshTimer=null;
+const save=()=>{localStorage.setItem('op_positions',JSON.stringify(positions));localStorage.setItem('op_orders',JSON.stringify(orders));localStorage.setItem('op_booked',String(booked));};
+function pnlClass(el,n){el.textContent=(n>=0?'+':'')+fmt(n);el.className=n>=0?'green':'red'}
+function render(){
+ let open=positions.reduce((s,p)=>s+(p.side==='BUY'?(p.ltp-p.avg):(p.avg-p.ltp))*p.qty,0);
+ pnlClass($('openPnl'),open);pnlClass($('bookedPnl'),booked);$('posCount').textContent=positions.length;$('walletCount').textContent=positions.length+' open positions';$('orderCount').textContent=orders.length;
+ $('positionsRows').innerHTML=positions.length?positions.map((p,i)=>`<tr><td>${p.name}</td><td>${p.side}</td><td>${p.qty}</td><td>${fmt(p.avg)}</td><td>${fmt(p.ltp)}</td><td class="${((p.side==='BUY'?p.ltp-p.avg:p.avg-p.ltp)*p.qty)>=0?'green':'red'}">${fmt((p.side==='BUY'?p.ltp-p.avg:p.avg-p.ltp)*p.qty)}</td><td><button class="sell" onclick="closePosition(${i})">Exit</button></td></tr>`).join(''):'<tr><td colspan="7" class="empty">No open positions yet.</td></tr>';
+ $('ordersRows').innerHTML=orders.length?orders.slice().reverse().map(o=>`<tr><td>${new Date(o.time).toLocaleTimeString()}</td><td>${o.name}</td><td>${o.action}</td><td>${o.qty}</td><td>${fmt(o.price)}</td><td class="green">PAPER FILLED</td></tr>`).join(''):'<tr><td colspan="6" class="empty">No paper orders yet.</td></tr>';
+}
+function setFeed(ok,msg){$('liveDot').className='dot'+(ok?' on':'');$('feedStatus').textContent=msg}
+function renderChain(){
+ $('chainRows').innerHTML=chain.map((r,i)=>{let c=r.call_options||{},p=r.put_options||{},cm=c.market_data||{},pm=p.market_data||{},cg=c.option_greeks||{},pg=p.option_greeks||{};
+ const btn=(key,side)=>`<button class="${side==='BUY'?'buy':'sell'}" onclick="trade(${i},'${key}','${side}')">${side==='BUY'?'Buy':'Sell'}</button>`;
+ return `<tr><td class="green">${fmt(cm.ltp)}</td><td>${Number(cm.oi||0).toLocaleString('en-IN')}</td><td>${Number(cm.volume||0).toLocaleString('en-IN')}</td><td>${Number(cg.iv||0).toFixed(1)}</td><td class="strike">${r.strike_price}</td><td>${Number(pg.iv||0).toFixed(1)}</td><td>${Number(pm.volume||0).toLocaleString('en-IN')}</td><td>${Number(pm.oi||0).toLocaleString('en-IN')}</td><td class="red">${fmt(pm.ltp)}</td></tr>
+ <tr><td colspan="4"><div class="actions">${btn('CE','BUY')}${btn('CE','SELL')}</div></td><td class="muted" style="text-align:center">CE / PE</td><td colspan="4"><div class="actions">${btn('PE','BUY')}${btn('PE','SELL')}</div></td></tr>`}).join('')||'<tr><td colspan="9" class="empty">No contracts returned.</td></tr>';
+}
+async function loadChain(){
+ const token=$('token').value.trim(),expiry=$('expiry').value,under=$('underlying').value;
+ if(!token){$('feedNotice').textContent='Add your Upstox access token in Settings first.';setFeed(false,'Token required');return}
+ if(!expiry){$('feedNotice').textContent='Choose an expiry date first.';return}
+ setFeed(false,'Connecting…');$('loadChain').disabled=true;
+ try{
+ const url='https://api.upstox.com/v2/option/chain?instrument_key='+encodeURIComponent(under)+'&expiry_date='+encodeURIComponent(expiry);
+ const res=await fetch(url,{headers:{Authorization:'Bearer '+token,Accept:'application/json'}});
+ if(!res.ok)throw new Error('Upstox API returned HTTP '+res.status+' — check token, expiry and API access.');
+ const data=await res.json();if(data.status!=='success')throw new Error(data.message||'Market data request failed');
+ chain=data.data||[];lastLoaded=Date.now();renderChain();setFeed(true,'Data received');$('feedNotice').textContent='Option chain loaded from Upstox at '+new Date(lastLoaded).toLocaleTimeString()+'. Refresh to request the latest snapshot.';
+ positions.forEach(pos=>{let row=chain.find(r=>Number(r.strike_price)===Number(pos.strike));let md=row?.[pos.type==='CE'?'call_options':'put_options']?.market_data;if(md?.ltp)pos.ltp=Number(md.ltp)});save();render();
+ }catch(e){setFeed(false,'Feed error');$('feedNotice').textContent=e.message+' If this is a browser CORS restriction, use the Android native wrapper/backend proxy described in README.'}
+ finally{$('loadChain').disabled=false}
+}
+function trade(i,type,side){
+ const row=chain[i],opt=row[type==='CE'?'call_options':'put_options'],md=opt?.market_data||{},price=Number(md.ltp||0);if(!price){alert('No valid LTP for this contract.');return}
+ const qty=Math.max(1,Number($('quantity').value)||1),name=$('underlying').selectedOptions[0].text+' '+row.strike_price+' '+type;
+ const order={time:Date.now(),name,action:side,qty,price};orders.push(order);
+ if(side==='BUY'){positions.push({name,strike:row.strike_price,type,side,qty,avg:price,ltp:price,brokerage:Number($('brokerage').value)||0})}
+ else {let idx=positions.findIndex(p=>p.name===name&&p.side==='BUY');if(idx>=0){let p=positions[idx],closeQty=Math.min(qty,p.qty);booked+=(price-p.avg)*closeQty-(Number($('brokerage').value)||0);p.qty-=closeQty;if(!p.qty)positions.splice(idx,1)}else{positions.push({name,strike:row.strike_price,type,side:'SELL',qty,avg:price,ltp:price,brokerage:Number($('brokerage').value)||0})}}
+ save();render();
+}
+function closePosition(i){let p=positions[i];booked+=(p.side==='BUY'?(p.ltp-p.avg):(p.avg-p.ltp))*p.qty-(Number($('brokerage').value)||0);orders.push({time:Date.now(),name:p.name,action:'EXIT',qty:p.qty,price:p.ltp});positions.splice(i,1);save();render()}
+$('loadChain').onclick=loadChain;$('refresh').onclick=loadChain;
+$('saveSettings').onclick=()=>{localStorage.setItem('op_token',$('token').value.trim());localStorage.setItem('op_qty',$('quantity').value);localStorage.setItem('op_interval',$('interval').value);localStorage.setItem('op_brokerage',$('brokerage').value);alert('Settings saved on this device.');};
+$('forgetToken').onclick=()=>{$('token').value='';localStorage.removeItem('op_token');alert('Token removed from this device.');};
+$('clearOrders').onclick=()=>{if(confirm('Clear order history? Open positions will remain.')){orders=[];save();render()}};
+$('resetApp').onclick=()=>{if(confirm('Reset all paper positions, orders and P&L?')){positions=[];orders=[];booked=0;save();render()}};
+document.querySelectorAll('.bottomnav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.bottomnav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById(b.dataset.target).scrollIntoView({behavior:'smooth',block:'start'})});
+$('token').value=localStorage.getItem('op_token')||'';$('quantity').value=localStorage.getItem('op_qty')||'1';$('interval').value=localStorage.getItem('op_interval')||'30';$('brokerage').value=localStorage.getItem('op_brokerage')||'20';
+render();if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
+</script></body></html>
